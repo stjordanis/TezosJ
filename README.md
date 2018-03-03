@@ -14,6 +14,16 @@ Add the line below to your dependencies on Android project build.gradle file:
 
    compile 'com.milfont.tezosj:tezosj:0.0.1'
 
+Usage example code:
+
+```
+Rpc rpc = new Rpc();
+// Gets BALANCE for a given address.
+JSONObject result = rpc.getBalance("tz1ZmsfxQrzHk8kjuYJp765LMg1ZpXbsqbPf");
+Log.i("output", "Your balance is : " + result.get("ok"));
+```
+
+
 # Disclaimer
 
 This software is at Alpha stage. It is currently experimental and is under development.
