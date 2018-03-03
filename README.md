@@ -12,7 +12,7 @@ TezosJ is to play the role of a layer that will translate default Java method ca
 
 Add the line below to your dependencies on Android project build.gradle file:
 
-   ***compile 'com.milfont.tezosj:tezosj:0.0.1'***
+   ***compile 'com.milfont.tezos:tezosj_android:0.0.1'***
 
 Usage example code:
 
