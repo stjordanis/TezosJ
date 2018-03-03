@@ -12,7 +12,7 @@ TezosJ is to play the role of a layer that will translate default Java method ca
 
 Add the line below to your dependencies on Android project build.gradle file:
 
-   compile 'com.milfont.tezosj:tezosj:0.0.1'
+   ***compile 'com.milfont.tezosj:tezosj:0.0.1'***
 
 Usage example code:
 
@@ -22,7 +22,6 @@ Rpc rpc = new Rpc();
 JSONObject result = rpc.getBalance("tz1ZmsfxQrzHk8kjuYJp765LMg1ZpXbsqbPf");
 Log.i("output", "Your balance is : " + result.get("ok"));
 ```
-
 
 # Disclaimer
 
