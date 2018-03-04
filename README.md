@@ -17,8 +17,8 @@ Add the line below to your dependencies on Android project's app build.gradle fi
 Usage example code:
 
 ```
+// Gets BALANCE for a given Tezos address.
 Rpc rpc = new Rpc();
-// Gets BALANCE for a given address.
 JSONObject result = rpc.getBalance("tz1ZmsfxQrzHk8kjuYJp765LMg1ZpXbsqbPf");
 Log.i("output", "Your balance is : " + result.get("ok"));
 ```
