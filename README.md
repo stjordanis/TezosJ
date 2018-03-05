@@ -16,7 +16,7 @@ Add the lines below to your dependencies on Android project's app build.gradle f
 
    ***compile 'com.squareup.okhttp3:okhttp:3.10.0'***
    
-   ***compile 'com.milfont.tezos:tezosj_android:0.0.1'***
+   ***compile 'com.milfont.tezos:tezosj_android:0.0.2'***
 
 
 
