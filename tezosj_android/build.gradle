@@ -1,19 +1,19 @@
 apply plugin: 'com.android.library'
 
 ext {
-    bintrayRepo = 'TezosJ'
-    bintrayName = 'tezosj'
+    bintrayRepo = 'tezos'
+    bintrayName = 'tezosj_android'
 
-    publishedGroupId = 'com.milfont.tezosj'
+    publishedGroupId = 'com.milfont.tezos'
     libraryName = 'TezosJ'
-    artifact = 'tezosj'
+    artifact = 'tezosj_android'
 
     libraryDescription = 'Tezos Java Integration Library'
 
     siteUrl = 'https://github.com/LMilfont/TezosJ'
     gitUrl = 'https://github.com/LMilfont/TezosJ.git'
 
-    libraryVersion = '0.0.1'
+    libraryVersion = '0.0.2'
 
     developerId = 'LMilfont'
     developerName = 'Luiz Milfont'

@@ -2,7 +2,12 @@ package milfont.com.tezosj_android.data;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.TimeUnit;
+
+import milfont.com.tezosj_android.helper.Base58Check;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -13,10 +18,9 @@ public class TezosGateway
 {
 
     final String DEFAULT_PROVIDER = "https://tezrpc.me/api";
-    OkHttpClient client = new OkHttpClient();
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     public static final MediaType textPlainMT = MediaType.parse("text/plain; charset=utf-8");
-
+    public static final Integer HTTP_TIMEOUT = 20;
 
     // Crypto methods.
 
@@ -81,11 +85,19 @@ public class TezosGateway
 
     public Boolean checkAddress(String address)
     {
-        // TODO : Implement this feature.
+        Base58Check base58Check = new Base58Check();
 
-        return false;
+        try
+        {
+            byte[] result = base58Check.decode(address);
+            return true;
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+
     }
-
 
 
     // Node methods.
@@ -121,6 +133,12 @@ public class TezosGateway
 
         try
         {
+            OkHttpClient client = new OkHttpClient.Builder()
+                    .connectTimeout(HTTP_TIMEOUT, TimeUnit.SECONDS)
+                    .writeTimeout(HTTP_TIMEOUT, TimeUnit.SECONDS)
+                    .readTimeout(HTTP_TIMEOUT, TimeUnit.SECONDS)
+                    .build();
+
             Response response = client.newCall(request).execute();
             result = response.body().string();
         }
@@ -162,7 +180,6 @@ public class TezosGateway
 
         return jobj;
     }
-
 
 
     // Contract methods.
