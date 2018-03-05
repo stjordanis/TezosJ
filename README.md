@@ -38,4 +38,8 @@ Many features are not fully implemented yet. This version uses Tezos Alphanet.
 
 TezosJ is based on Stephen Andrews' EZTZ Javascript library.
 
+# Latest Changes
+
+v0.0.2 - Added checkAddress feature.
+
 
