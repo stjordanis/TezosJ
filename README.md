@@ -12,13 +12,10 @@ TezosJ is to play the role of a layer that will translate default Java method ca
 
 Add the lines below to your dependencies on Android project's app build.gradle file:
 
-
-
-    ***compile 'com.squareup.okhttp3:okhttp:3.10.0'***
-    ***compile 'com.milfont.tezos:tezosj_android:0.0.3'***
-    ***compile 'org.bitcoinj:bitcoinj-core:0.14.6'***
-    ***compile 'com.github.joshjdevl.libsodiumjni:libsodium-jni-aar:1.0.8'***
-
+***compile 'com.squareup.okhttp3:okhttp:3.10.0'***
+***compile 'com.milfont.tezos:tezosj_android:0.0.3'***
+***compile 'org.bitcoinj:bitcoinj-core:0.14.6'***
+***compile 'com.github.joshjdevl.libsodiumjni:libsodium-jni-aar:1.0.8'***
 
 
 Usage example code:
