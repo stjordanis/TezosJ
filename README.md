@@ -10,22 +10,60 @@ TezosJ is to play the role of a layer that will translate default Java method ca
 
 # Usage
 
-Add the lines below to your dependencies on Android project's app build.gradle file:
+First of all, add 'tools:replace="android:allowBackup"' to your application tag in AndroidManifest.xml, like this:
+
+   <application tools:replace="android:allowBackup"
+           android:allowBackup="true"
+           android:icon="@mipmap/ic_launcher" ...
+        
+Don't forget to add uses-Internet permission:
+
+   <uses-permission android:name="android.permission.INTERNET" />
+
+
+Then add the lines below to your dependencies on Android project's app build.gradle file:
 
 ***compile 'com.squareup.okhttp3:okhttp:3.10.0'***
+
 ***compile 'com.milfont.tezos:tezosj_android:0.0.3'***
+
 ***compile 'org.bitcoinj:bitcoinj-core:0.14.6'***
+
 ***compile 'com.github.joshjdevl.libsodiumjni:libsodium-jni-aar:1.0.8'***
+
 
 
 Usage example code:
 
 ```
-// Gets BALANCE for a given Tezos address.
-Rpc rpc = new Rpc();
-JSONObject result = rpc.getBalance("tz1ZmsfxQrzHk8kjuYJp765LMg1ZpXbsqbPf");
-Log.i("output", "Your balance is : " + result.get("ok"));
+                        Crypto crypto = new Crypto();
+                        String words = crypto.generateMnemonic();
+
+                        JSONObject jsonObject = crypto.generateKeys(words, "test");
+
+                        try
+                        {
+                            Log.i("output", "mnemonic   : " + jsonObject.get("mnemonic"));
+                            Log.i("output", "passphrase : " + jsonObject.get("passphrase"));
+                            Log.i("output", "sk         : " + jsonObject.get("sk"));
+                            Log.i("output", "pk         : " + jsonObject.get("pk"));
+                            Log.i("output", "pkh        : " + jsonObject.get("pkh"));
+
+                            myTezosAddress = jsonObject.get("pkh").toString();
+
+                            // Gets BALANCE for a given Tezos address.
+                            Rpc rpc = new Rpc();
+                            JSONObject result = rpc.getBalance(myTezosAddress);
+                            Log.i("output", "Your balance is : " + result.get("ok"));
+
+                        }
+                        catch (Exception e)
+                        {
+                        }
 ```
+
+Remember to put the code above inside a Thread to avoid Network on main thread exception.
+
 
 # Disclaimer
 
@@ -34,10 +72,14 @@ Many features are not fully implemented yet. This version uses Tezos Alphanet.
 
 # Credits
 
-TezosJ is based on Stephen Andrews' EZTZ Javascript library.
+TezosJ is based on Stephen Andrews' EZTZ Javascript library ( https://github.com/stephenandrews/eztz ).
+TezosJ uses Libsodium-JNI from Joshjdevl ( https://github.com/joshjdevl/libsodium-jni ).
+TezosJ uses BitcoinJ Java Library ( https://github.com/bitcoinj/bitcoinj ).
+SPECIAL THANX TO TEZZIGATOR for providing the code for Tezos Key Generation in Java.
 
 # Latest Changes
 
 v0.0.2 - Added checkAddress feature.
+v0.0.3 - Added generateKeys feature.
 
 
