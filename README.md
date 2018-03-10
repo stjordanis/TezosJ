@@ -18,7 +18,9 @@ First of all, add 'tools:replace="android:allowBackup"' to your application tag 
           &nbsp;  
 Don't forget to add uses-Internet permission:  &nbsp;  
   &nbsp;  
+  ```
    <uses-permission android:name="android.permission.INTERNET" />  &nbsp;  
+   ```
   &nbsp;  
   &nbsp;  
 Then add the lines below to your dependencies on Android project's app build.gradle file:  &nbsp;  
@@ -75,7 +77,7 @@ Many features are not fully implemented yet. This version uses Tezos Alphanet.
 TezosJ is based on Stephen Andrews' EZTZ Javascript library ( https://github.com/stephenandrews/eztz ).  &nbsp;  
 TezosJ uses Libsodium-JNI from Joshjdevl ( https://github.com/joshjdevl/libsodium-jni ).  &nbsp;  
 TezosJ uses BitcoinJ Java Library ( https://github.com/bitcoinj/bitcoinj ).  &nbsp;  
-SPECIAL THANX TO TEZZIGATOR for providing the code for Tezos Key Generation in Java.  &nbsp;  
+SPECIAL THANX TO TEZZIGATOR ( https://twitter.com/@tezzigator ) for providing the code for Tezos Key Generation in Java.  &nbsp;  
 
 # Latest Changes
 
