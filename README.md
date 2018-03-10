@@ -14,9 +14,10 @@ Add the lines below to your dependencies on Android project's app build.gradle f
 
 
 
-   ***compile 'com.squareup.okhttp3:okhttp:3.10.0'***
-   
-   ***compile 'com.milfont.tezos:tezosj_android:0.0.2'***
+    ***compile 'com.squareup.okhttp3:okhttp:3.10.0'***
+    ***compile 'com.milfont.tezos:tezosj_android:0.0.3'***
+    ***compile 'org.bitcoinj:bitcoinj-core:0.14.6'***
+    ***compile 'com.github.joshjdevl.libsodiumjni:libsodium-jni-aar:1.0.8'***
 
 
 
