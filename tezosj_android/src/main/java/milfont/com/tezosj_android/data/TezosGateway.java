@@ -1,13 +1,19 @@
 package milfont.com.tezosj_android.data;
 
+import org.bitcoinj.crypto.MnemonicCode;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import milfont.com.tezosj_android.helper.Base58;
 import milfont.com.tezosj_android.helper.Base58Check;
+import milfont.com.tezosj_android.helper.KeyPair;
+import milfont.com.tezosj_android.helper.MyCryptoGenericHash;
+import milfont.com.tezosj_android.helper.Sha256Hash;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -21,14 +27,83 @@ public class TezosGateway
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     public static final MediaType textPlainMT = MediaType.parse("text/plain; charset=utf-8");
     public static final Integer HTTP_TIMEOUT = 20;
-
+    
     // Crypto methods.
 
     public JSONObject generateKeys(String mnemonic, String passphrase)
     {
-        JSONObject response = null;
+        JSONObject response = new JSONObject();
 
-        // TODO : Implement this feature.
+        try
+        {
+            MnemonicCode mc = new MnemonicCode();
+            String cleanMnemonic = mnemonic.replace("[", "");
+            cleanMnemonic = cleanMnemonic.replace("]", "");
+
+            List<String> items = Arrays.asList(cleanMnemonic.split("\\s*,\\s*"));
+            byte[] src_seed = mc.toSeed(items, passphrase);
+            byte[] seed = Arrays.copyOfRange(src_seed, 0, 32);
+
+            KeyPair key = new KeyPair(seed);
+            byte[] sodiumPublicKey = key.getPublicKey().toBytes();
+            byte[] sodiumPrivateKey = key.getPrivateKey().toBytes();
+
+            // These are our prefixes
+            byte[] edpkPrefix = {(byte) 13, (byte) 15, (byte) 37, (byte) 217};
+            byte[] edskPrefix = {(byte) 43, (byte) 246, (byte) 78, (byte) 7};
+            byte[] tz1Prefix = {(byte) 6, (byte) 161, (byte) 159};
+
+            // Create Tezos PK.
+            byte[] prefixedPubKey = new byte[36];
+            System.arraycopy(edpkPrefix, 0, prefixedPubKey, 0, 4);
+            System.arraycopy(sodiumPublicKey, 0, prefixedPubKey, 4, 32);
+
+            byte[] firstFourOfDoubleChecksum = Sha256Hash.hashTwiceThenFirstFourOnly(prefixedPubKey);
+            byte[] prefixedPubKeyWithChecksum = new byte[40];
+            System.arraycopy(prefixedPubKey, 0, prefixedPubKeyWithChecksum, 0, 36);
+            System.arraycopy(firstFourOfDoubleChecksum, 0, prefixedPubKeyWithChecksum, 36, 4);
+
+            String TezosPkString = Base58.encode(prefixedPubKeyWithChecksum);
+
+            // Create Tezos SK.
+            byte[] prefixedSecKey = new byte[68];
+            System.arraycopy(edskPrefix, 0, prefixedSecKey, 0, 4);
+            System.arraycopy(sodiumPrivateKey, 0, prefixedSecKey, 4, 64);
+
+            firstFourOfDoubleChecksum = Sha256Hash.hashTwiceThenFirstFourOnly(prefixedSecKey);
+            byte[] prefixedSecKeyWithChecksum = new byte[72];
+            System.arraycopy(prefixedSecKey, 0, prefixedSecKeyWithChecksum, 0, 68);
+            System.arraycopy(firstFourOfDoubleChecksum, 0, prefixedSecKeyWithChecksum, 68, 4);
+
+            String TezosSkString = Base58.encode(prefixedSecKeyWithChecksum);
+
+            //create tezos PKHash
+            byte[] genericHash = new byte[20];
+            genericHash = MyCryptoGenericHash.cryptoGenericHash(sodiumPublicKey, genericHash.length);
+
+            byte[] prefixedGenericHash = new byte[23];
+            System.arraycopy(tz1Prefix, 0, prefixedGenericHash, 0, 3);
+            System.arraycopy(genericHash, 0, prefixedGenericHash, 3, 20);
+
+            firstFourOfDoubleChecksum = Sha256Hash.hashTwiceThenFirstFourOnly(prefixedGenericHash);
+            byte[] prefixedPKhashWithChecksum = new byte[27];
+            System.arraycopy(prefixedGenericHash, 0, prefixedPKhashWithChecksum, 0, 23);
+            System.arraycopy(firstFourOfDoubleChecksum, 0, prefixedPKhashWithChecksum, 23, 4);
+
+            String pkHash = Base58.encode(prefixedPKhashWithChecksum);
+
+            // Builds JSON to return.
+            response.put("mnemonic", items);
+            response.put("passphrase", passphrase);
+            response.put("sk", TezosSkString);
+            response.put("pk", TezosPkString);
+            response.put("pkh", pkHash);
+
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
 
         return response;
     }
@@ -78,9 +153,22 @@ public class TezosGateway
 
     public String generateMnemonic()
     {
-        // TODO : Implement this feature.
+        String result = "";
 
-        return "";
+        try
+        {
+            MnemonicCode mc = new MnemonicCode();
+            byte[] bytes = new byte[20];
+            new java.util.Random().nextBytes(bytes);
+            List<String> code = mc.toMnemonic(bytes);
+            result = code.toString();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        return result;
     }
 
     public Boolean checkAddress(String address)
