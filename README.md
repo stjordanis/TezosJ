@@ -10,19 +10,19 @@ TezosJ is to play the role of a layer that will translate default Java method ca
 
 # Usage
 
-First of all, add 'tools:replace="android:allowBackup"' to your application tag in AndroidManifest.xml, like this:
-
-   <application tools:replace="android:allowBackup"
-           android:allowBackup="true"
-           android:icon="@mipmap/ic_launcher" ...
-        
-Don't forget to add uses-Internet permission:
-
-   <uses-permission android:name="android.permission.INTERNET" />
-
-
-Then add the lines below to your dependencies on Android project's app build.gradle file:
-
+First of all, add 'tools:replace="android:allowBackup"' to your application tag in AndroidManifest.xml, like this:  &nbsp;  
+  &nbsp;  
+   <application tools:replace="android:allowBackup"  &nbsp;  
+           android:allowBackup="true"  &nbsp;  
+           android:icon="@mipmap/ic_launcher" ...  &nbsp;  
+          &nbsp;  
+Don't forget to add uses-Internet permission:  &nbsp;  
+  &nbsp;  
+   <uses-permission android:name="android.permission.INTERNET" />  &nbsp;  
+  &nbsp;  
+  &nbsp;  
+Then add the lines below to your dependencies on Android project's app build.gradle file:  &nbsp;  
+  &nbsp;  
 ***compile 'com.squareup.okhttp3:okhttp:3.10.0'***
 
 ***compile 'com.milfont.tezos:tezosj_android:0.0.3'***
@@ -61,8 +61,8 @@ Usage example code:
                         {
                         }
 ```
-
-Remember to put the code above inside a Thread to avoid Network on main thread exception.
+  &nbsp;  
+Remember to put the code above inside a Thread to avoid Network on main thread exception.  &nbsp;  
 
 
 # Disclaimer
@@ -72,10 +72,10 @@ Many features are not fully implemented yet. This version uses Tezos Alphanet.
 
 # Credits
 
-TezosJ is based on Stephen Andrews' EZTZ Javascript library ( https://github.com/stephenandrews/eztz ).
-TezosJ uses Libsodium-JNI from Joshjdevl ( https://github.com/joshjdevl/libsodium-jni ).
-TezosJ uses BitcoinJ Java Library ( https://github.com/bitcoinj/bitcoinj ).
-SPECIAL THANX TO TEZZIGATOR for providing the code for Tezos Key Generation in Java.
+TezosJ is based on Stephen Andrews' EZTZ Javascript library ( https://github.com/stephenandrews/eztz ).  &nbsp;  
+TezosJ uses Libsodium-JNI from Joshjdevl ( https://github.com/joshjdevl/libsodium-jni ).  &nbsp;  
+TezosJ uses BitcoinJ Java Library ( https://github.com/bitcoinj/bitcoinj ).  &nbsp;  
+SPECIAL THANX TO TEZZIGATOR for providing the code for Tezos Key Generation in Java.  &nbsp;  
 
 # Latest Changes
 
