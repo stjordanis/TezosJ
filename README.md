@@ -79,7 +79,7 @@ SPECIAL THANX TO TEZZIGATOR for providing the code for Tezos Key Generation in J
 
 # Latest Changes
 
-v0.0.2 - Added checkAddress feature.
+v0.0.2 - Added checkAddress feature.  &nbsp;  
 v0.0.3 - Added generateKeys feature.
 
 
