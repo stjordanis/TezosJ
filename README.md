@@ -78,13 +78,23 @@ TezosJ is based on Stephen Andrews' EZTZ Javascript library ( https://github.com
 TezosJ uses Libsodium-JNI from Joshjdevl ( https://github.com/joshjdevl/libsodium-jni ).  &nbsp;  
 TezosJ uses BitcoinJ Java Library ( https://github.com/bitcoinj/bitcoinj ).  &nbsp;  
 SPECIAL THANX TO TEZZIGATOR ( https://twitter.com/@tezzigator ) for providing the code for Tezos Key Generation in Java.  &nbsp;  
+
 # Contribute
 
-Please feel free to contribute - I will merge any pull requests as soon as I've gone through the changes.  &;  
+Please feel free to contribute - I will merge any pull requests as soon as I've gone through the changes.
+
 
 # Latest Changes
 
 v0.0.2 - Added checkAddress feature.  &nbsp;  
 v0.0.3 - Added generateKeys feature.
 
+# Support
 
+Please consider donating to foster future enhancements:
+
+  Bitcoin:  35zL4KCZeE8vG6gPWJ9MypwV6aMSMvneAS
+
+  Ethereum: 0xa2d909FEE7e6A0A5c6c052eABf4D5d6B0E1c8817
+
+  Waves: 3P8BRcvebZdcX8DJt3oXzHcpV5nmckNNJHp
