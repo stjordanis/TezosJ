@@ -19,7 +19,7 @@ First of all, add 'tools:replace="android:allowBackup"' to your application tag 
 Don't forget to add uses-Internet permission:  &nbsp;  
   &nbsp;  
   ```
-   <uses-permission android:name="android.permission.INTERNET" />  &nbsp;  
+   <uses-permission android:name="android.permission.INTERNET" /> 
    ```
   &nbsp;  
   &nbsp;  
@@ -32,7 +32,7 @@ Then add the lines below to your dependencies on Android project's app build.gra
 ***compile 'org.bitcoinj:bitcoinj-core:0.14.6'***
 
 ***compile 'com.github.joshjdevl.libsodiumjni:libsodium-jni-aar:1.0.8'***
-
+  &nbsp;  
 
 
 Usage example code:
