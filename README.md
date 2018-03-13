@@ -1,13 +1,17 @@
-# TezosJ
+# TezosJ library
 
 The **TezosJ library** enables Java and Android developers to create apps that communicates with Tezos blockchain.
 
 The library is written in Java and is based on Android framework. This repository contains the library as well as a demo application demonstrating how to use it.
 
 ## Getting started
-<!--
+
 Read the **[project documentation][doc-home]** for comprehensive information about the requirements, general workflow and installation procedure.
--->
+
+## Disclaimer
+
+This software is at Alpha stage. It is currently experimental and is under development.
+Many features are not fully implemented yet. This version uses Tezos Alphanet.
 
 ## Resources
 <!---
@@ -20,7 +24,9 @@ Read the **[project documentation][doc-home]** for comprehensive information abo
 
 ## Features
 
-- Allows you to create wallets addresses, getting accounts balance, sending funds, ...
+- Create wallets addresses
+- Getting accounts balance
+- Sending funds, ...
 
 <!---
 - Presents a **clean, native payment screen** optimized for Android devices
@@ -31,12 +37,20 @@ TezosJ is to play the role of a layer that will translate default Java method ca
 (create_account, transfer_token, etc.).
 -->
 
-# Credits
+## Credits
 
-- TezosJ is based on Stephen Andrews' EZTZ Javascript library (https://github.com/stephenandrews/eztz).  
-- TezosJ uses Libsodium-JNI from Joshjdevl (https://github.com/joshjdevl/libsodium-jni).  
-- TezosJ uses BitcoinJ Java Library (https://github.com/bitcoinj/bitcoinj).   
-- SPECIAL THANX TO TEZZIGATOR (https://twitter.com/@tezzigator) for providing the code for Tezos Key Generation in Java. 
+- TezosJ is based on Stephen Andrews' EZTZ Javascript library  [https://github.com/stephenandrews/eztz](https://github.com/stephenandrews/eztz).  
+- TezosJ uses Libsodium-JNI from Joshjdevl  [https://github.com/joshjdevl/libsodium-jni](https://github.com/joshjdevl/libsodium-jni).  
+- TezosJ uses BitcoinJ Java Library  [https://github.com/bitcoinj/bitcoinj](https://github.com/bitcoinj/bitcoinj).   
+- Special thanks to Tezzigator ([https://twitter.com/@tezzigator](https://twitter.com/@tezzigator)) for providing the code for Tezos Key Generation in Java. 
+
+## Contribute
+
+Please consider donating to foster future enhancements: 
+
+- Bitcoin:  35zL4KCZeE8vG6gPWJ9MypwV6aMSMvneAS 
+- Ethereum: 0xa2d909FEE7e6A0A5c6c052eABf4D5d6B0E1c8817 
+- Waves: 3P8BRcvebZdcX8DJt3oXzHcpV5nmckNNJHp 
 
 ## License
 

@@ -20,7 +20,7 @@ Any contributions should pass all tests.
 
 ## Licensing
 
-The TezosJ library is released under an [MIT][project-license] license. Any code you submit will be
+The TezosJ library is released under an [MIT licence][project-license] license. Any code you submit will be
 released under that license.
 
 [project-license]: LICENSE.md
