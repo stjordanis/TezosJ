@@ -56,7 +56,7 @@ Please consider donating to foster future enhancements:
 
 The **TezosJ library** is available under the **MIT License**. Check out the [license file][project-license] for more information.
 
-[doc-home]: https://developer.android.com/index.html/
+[doc-home]: https://github.com/LMilfont/TezosJ/wiki
 
 [tezosj-help]: http://help.android.com
 
