@@ -1,13 +1,18 @@
 package milfont.com.tezosj_android.data;
 
+import android.util.Log;
+
 import org.bitcoinj.crypto.MnemonicCode;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.libsodium.jni.Sodium;
+import org.libsodium.jni.NaCl;
+
+import static org.libsodium.jni.encoders.Encoder.HEX;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -144,30 +149,43 @@ public class TezosGateway
     {
         JSONObject response = new JSONObject();
 
-        int[] lengths = {32};
-        byte[] sig = new byte[32];
-        Sodium.crypto_sign_detached(sig, lengths, bytes, bytes.length, sk.getBytes());
-
-        byte[] myPrefixEdsig = {9, (byte) 245, (byte) 205, (byte) 134, 18};
-        byte[] prefixedSig = new byte[37];
-        System.arraycopy(myPrefixEdsig, 0, prefixedSig, 0, 5);
-        System.arraycopy(sig, 0, prefixedSig, 5, 32);
-
-        String edsig = Base58.encode(prefixedSig);
-
-        byte[] signedBytes = new byte[64];
-        System.arraycopy(bytes, 0, signedBytes, 0, 32);
-        System.arraycopy(sig, 0, signedBytes, 32, 32);
-        String sbytes = Base58.encode(signedBytes);
+        int[] lengths = {64};
+        byte[] sig = new byte[64];
 
         try
         {
-            response.put("bytes", bytes);
-            response.put("sig", sig);
+            byte[] byteDecodedSk = Base58Check.decode(sk);
+            byte[] slicedSig = new byte[64];
+
+            for (int i = (slicedSig.length - 1); i >= 0; i--)
+            {
+                slicedSig[i] = byteDecodedSk[i + 4];
+            }
+
+            int r = NaCl.sodium().crypto_sign_detached(sig, lengths, bytes, bytes.length, slicedSig);
+
+            byte[] edsigPrefix = {9, (byte) 245, (byte) 205, (byte) 134, 18};
+            int totalArraySize = slicedSig.length + edsigPrefix.length;
+            byte[] byteEdsig = new byte[totalArraySize];
+
+            System.arraycopy(edsigPrefix, 0, byteEdsig, 0, 5);
+
+            for (int i=0;i<slicedSig.length;i++)
+            {
+                byteEdsig[i+5] = slicedSig[i];
+            }
+
+            String edsig = Base58Check.encode(byteEdsig);
+            String sbytes = HEX.encode(bytes) + HEX.encode(sig);
+
+            // Now, with all needed values ready, creates the response.
+            response.put("bytes", HEX.encode(bytes));
+            response.put("sig", HEX.encode(sig));
             response.put("edsig", edsig);
             response.put("sbytes", sbytes);
+
         }
-        catch (JSONException e)
+        catch (Exception e)
         {
             e.printStackTrace();
         }
@@ -325,10 +343,13 @@ public class TezosGateway
                 result = (JSONObject) query("/blocks/prevalidation/proto/helpers/forge/operations", opOb.toString());
 
                 JSONObject resultOperation = (JSONObject) result.get("ok");
-                byte[] opbytes = resultOperation.get("operation").toString().getBytes();
+                byte[] opbytes = HEX.decode(resultOperation.get("operation").toString());
+
+                String test = "fc78beb16443d044bdaa453367263f5bb9e199f36ff1417d5e259553fe47a42e00000024bc5c23741688135d92172ce19ad1f850c1e0150136ff920e335f85e669ea81ddc0ea7481912d55ace18534ddd6390bcf106af830000000000000000000007f540000001f00000000000000138800787e98f203fee1b2b96760dc56a2f519549ed54f00";
+
                 JSONObject signed = new JSONObject();
                 String strSk = keys.get("sk").toString();
-                signed = sign(opbytes, strSk);
+                signed = sign(HEX.decode(test), strSk);
 
                 byte[] myPrefixOp = {(byte) 5, (byte) 116};
 
