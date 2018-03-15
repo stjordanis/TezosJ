@@ -57,14 +57,15 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:27.0.0'
-    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     compile 'com.google.guava:guava:r05'
     compile 'org.slf4j:slf4j-simple:1.6.1'
-    implementation 'org.bitcoinj:bitcoinj-core:0.14.6'
-    implementation 'com.github.joshjdevl.libsodiumjni:libsodium-jni-aar:1.0.8'
+
+    api 'org.bitcoinj:bitcoinj-core:0.14.6'
+    api 'com.github.joshjdevl.libsodiumjni:libsodium-jni-aar:1.0.8'
+    api 'com.squareup.okhttp3:okhttp:3.10.0'
 }
 
 apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
