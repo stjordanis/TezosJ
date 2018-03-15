@@ -2,6 +2,7 @@ package milfont.com.tezosj_android.data;
 
 import org.bitcoinj.crypto.MnemonicCode;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.libsodium.jni.Sodium;
 
@@ -139,14 +140,41 @@ public class TezosGateway
         return response;
     }
 
-    public JSONObject sign(Byte[] bytes, String sk)
+    public JSONObject sign(byte[] bytes, String sk)
     {
-        JSONObject response = null;
+        JSONObject response = new JSONObject();
 
-        // TODO : Implement this feature.
+        int[] lengths = {32};
+        byte[] sig = new byte[32];
+        Sodium.crypto_sign_detached(sig, lengths, bytes, bytes.length, sk.getBytes());
+
+        byte[] myPrefixEdsig = {9, (byte) 245, (byte) 205, (byte) 134, 18};
+        byte[] prefixedSig = new byte[37];
+        System.arraycopy(myPrefixEdsig, 0, prefixedSig, 0, 5);
+        System.arraycopy(sig, 0, prefixedSig, 5, 32);
+
+        String edsig = Base58.encode(prefixedSig);
+
+        byte[] signedBytes = new byte[64];
+        System.arraycopy(bytes, 0, signedBytes, 0, 32);
+        System.arraycopy(sig, 0, signedBytes, 32, 32);
+        String sbytes = Base58.encode(signedBytes);
+
+        try
+        {
+            response.put("bytes", bytes);
+            response.put("sig", sig);
+            response.put("edsig", edsig);
+            response.put("sbytes", sbytes);
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
 
         return response;
     }
+
 
     public Boolean verify(Byte[] bytes, String signature, String pk)
     {
@@ -298,16 +326,15 @@ public class TezosGateway
 
                 JSONObject resultOperation = (JSONObject) result.get("ok");
                 byte[] opbytes = resultOperation.get("operation").toString().getBytes();
-                byte[] signed = new byte[32];
+                JSONObject signed = new JSONObject();
                 String strSk = keys.get("sk").toString();
-                int[] lengths = {32};
-                Sodium.crypto_sign(signed, lengths, opbytes, 32, strSk.getBytes());
+                signed = sign(opbytes, strSk);
 
                 byte[] myPrefixOp = {(byte) 5, (byte) 116};
 
-                byte[] prefixedOpHash = new byte[34];
+                byte[] prefixedOpHash = new byte[66];
                 System.arraycopy(myPrefixOp, 0, prefixedOpHash, 0, 2);
-                System.arraycopy(signed, 0, prefixedOpHash, 2, 32);
+                System.arraycopy(Base58.decode((String) signed.get("sbytes")), 0, prefixedOpHash, 2, 64);
 
                 String oh = Base58.encode(MyCryptoGenericHash.cryptoGenericHash(prefixedOpHash, 34));
 
@@ -315,9 +342,7 @@ public class TezosGateway
                 myOperation.put("pred_block", pred_block);
                 myOperation.put("operation_hash", oh);
                 myOperation.put("forged_operation", opbytes);
-
-                // TODO: Verify what is "signed.edsig".
-                //myOperation.put("signature", signed.edsig);
+                myOperation.put("signature", signed.get("edsig"));
 
                 result = (JSONObject) query("/blocks/prevalidation/proto/helpers/apply_operation", myOperation.toString());
 

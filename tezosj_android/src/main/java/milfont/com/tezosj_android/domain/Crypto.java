@@ -39,7 +39,7 @@ public class Crypto
         return jsonResponse;
     }
 
-    public JSONObject sign(Byte[] bytes, String sk)
+    public JSONObject sign(byte[] bytes, String sk)
     {
         TezosGateway tzg = new TezosGateway();
         JSONObject jsonResponse = tzg.sign(bytes, sk);
