@@ -357,7 +357,7 @@ public class TezosGateway
                 System.arraycopy(myPrefixOp, 0, prefixedOpHash, 0, 2);
                 System.arraycopy(HEX.decode((String) signed.get("sbytes")), 0, prefixedOpHash, 2, 64);
 
-                String oh = Base58.encode(MyCryptoGenericHash.cryptoGenericHash(prefixedOpHash, 34));
+                String oh = Base58.encode(MyCryptoGenericHash.cryptoGenericHash(prefixedOpHash, 32));
 
                 JSONObject myOperation = new JSONObject();
                 myOperation.put("pred_block", pred_block);
