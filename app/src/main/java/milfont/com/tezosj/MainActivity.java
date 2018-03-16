@@ -21,13 +21,16 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        testMethods();
+    }
 
+    private void testMethods()
+    {
         Thread thread = new Thread(new Runnable()
         {
             @Override
             public void run()
             {
-
                 String words = crypto.generateMnemonic();
 
                 JSONObject jsonObject = crypto.generateKeys(words, "test");
@@ -49,8 +52,6 @@ public class MainActivity extends AppCompatActivity
 
                 if (myTezosAddress.length() > 0)
                 {
-
-
                     // Checks if ADDRESS is valid.
                     try
                     {
@@ -62,7 +63,6 @@ public class MainActivity extends AppCompatActivity
                         e.printStackTrace();
                     }
 
-
                     // Gets BALANCE for a given address.
                     try
                     {
@@ -73,7 +73,6 @@ public class MainActivity extends AppCompatActivity
                     {
                         e.printStackTrace();
                     }
-
                 }
 
                 // Gets HEAD object from the connected node for a given address.
@@ -86,13 +85,9 @@ public class MainActivity extends AppCompatActivity
                 //{
                 //    e.printStackTrace();
                 //}
-
             }
         });
 
         thread.start();
-
-
     }
-
 }
