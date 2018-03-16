@@ -26,9 +26,6 @@ ext {
 
 android {
     compileSdkVersion 27
-
-
-
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 27
@@ -36,7 +33,6 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
     }
 
     buildTypes {
@@ -50,9 +46,7 @@ android {
             }
         }
     }
-
 }
-
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
@@ -68,5 +62,5 @@ dependencies {
     api 'com.squareup.okhttp3:okhttp:3.10.0'
 }
 
-apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
-apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'
+apply from: '../deployment/installv1.gradle'
+apply from: '../deployment/bintrayv1.gradle'
