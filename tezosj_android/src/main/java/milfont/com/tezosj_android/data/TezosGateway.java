@@ -165,14 +165,14 @@ public class TezosGateway
             int r = NaCl.sodium().crypto_sign_detached(sig, lengths, bytes, bytes.length, slicedSig);
 
             byte[] edsigPrefix = {9, (byte) 245, (byte) 205, (byte) 134, 18};
-            int totalArraySize = slicedSig.length + edsigPrefix.length;
+            int totalArraySize = sig.length + edsigPrefix.length;
             byte[] byteEdsig = new byte[totalArraySize];
 
             System.arraycopy(edsigPrefix, 0, byteEdsig, 0, 5);
 
-            for (int i=0;i<slicedSig.length;i++)
+            for (int i=0;i<sig.length;i++)
             {
-                byteEdsig[i+5] = slicedSig[i];
+                byteEdsig[i+5] = sig[i];
             }
 
             String edsig = Base58Check.encode(byteEdsig);
@@ -355,14 +355,14 @@ public class TezosGateway
 
                 byte[] prefixedOpHash = new byte[66];
                 System.arraycopy(myPrefixOp, 0, prefixedOpHash, 0, 2);
-                System.arraycopy(Base58.decode((String) signed.get("sbytes")), 0, prefixedOpHash, 2, 64);
+                System.arraycopy(HEX.decode((String) signed.get("sbytes")), 0, prefixedOpHash, 2, 64);
 
                 String oh = Base58.encode(MyCryptoGenericHash.cryptoGenericHash(prefixedOpHash, 34));
 
                 JSONObject myOperation = new JSONObject();
                 myOperation.put("pred_block", pred_block);
                 myOperation.put("operation_hash", oh);
-                myOperation.put("forged_operation", opbytes);
+                myOperation.put("forged_operation", HEX.encode(opbytes));
                 myOperation.put("signature", signed.get("edsig"));
 
                 result = (JSONObject) query("/blocks/prevalidation/proto/helpers/apply_operation", myOperation.toString());

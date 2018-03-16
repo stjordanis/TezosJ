@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity
                     // Transfers funds to address.
                     try
                     {
-                        JSONObject result = rpc.transfer(myKeys, myTezosAddress, "tz1Wd9SHPYZbjgiDjJSGoE6MSza7HmyrX35a", new BigDecimal("100"),0);
+                        JSONObject result = rpc.transfer(myKeys, myTezosAddress, "tz1Wd9SHPYZbjgiDjJSGoE6MSza7HmyrX35a", new BigDecimal("86"),0);
                         Log.i("output", "Your balance is : " + myBalance.get("ok"));
                     }
                     catch (Exception e)
