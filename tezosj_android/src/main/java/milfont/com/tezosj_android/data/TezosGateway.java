@@ -3,8 +3,12 @@ package milfont.com.tezosj_android.data;
 import org.bitcoinj.crypto.MnemonicCode;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.libsodium.jni.NaCl;
+
+import static org.libsodium.jni.encoders.Encoder.HEX;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -27,7 +31,9 @@ public class TezosGateway
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     public static final MediaType textPlainMT = MediaType.parse("text/plain; charset=utf-8");
     public static final Integer HTTP_TIMEOUT = 20;
-    
+
+    public static String OPERATION_KIND_TRANSACTION = "transaction";
+
     // Crypto methods.
 
     public JSONObject generateKeys(String mnemonic, String passphrase)
@@ -135,14 +141,54 @@ public class TezosGateway
         return response;
     }
 
-    public JSONObject sign(Byte[] bytes, String sk)
+    public JSONObject sign(byte[] bytes, String sk)
     {
-        JSONObject response = null;
+        JSONObject response = new JSONObject();
 
-        // TODO : Implement this feature.
+        int[] lengths = {64};
+        byte[] sig = new byte[64];
+
+        try
+        {
+            byte[] byteDecodedSk = Base58Check.decode(sk);
+            byte[] slicedSig = new byte[64];
+
+            for (int i = (slicedSig.length - 1); i >= 0; i--)
+            {
+                slicedSig[i] = byteDecodedSk[i + 4];
+            }
+
+            int r = NaCl.sodium().crypto_sign_detached(sig, lengths, bytes, bytes.length, slicedSig);
+
+            byte[] edsigPrefix = {9, (byte) 245, (byte) 205, (byte) 134, 18};
+            int totalArraySize = sig.length + edsigPrefix.length;
+            byte[] byteEdsig = new byte[totalArraySize];
+
+            System.arraycopy(edsigPrefix, 0, byteEdsig, 0, 5);
+
+            for (int i = 0; i < sig.length; i++)
+            {
+                byteEdsig[i + 5] = sig[i];
+            }
+
+            String edsig = Base58Check.encode(byteEdsig);
+            String sbytes = HEX.encode(bytes) + HEX.encode(sig);
+
+            // Now, with all needed values ready, creates the response.
+            response.put("bytes", HEX.encode(bytes));
+            response.put("sig", HEX.encode(sig));
+            response.put("edsig", edsig);
+            response.put("sbytes", sbytes);
+
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
 
         return response;
     }
+
 
     public Boolean verify(Byte[] bytes, String signature, String pk)
     {
@@ -202,9 +248,11 @@ public class TezosGateway
         // resetProvider(DEFAULT_PROVIDER);
     }
 
-    public String query(String endpoint, String data)
+
+    public JSONObject query(String endpoint, String data)
     {
-        String result = "";
+
+        JSONObject result = null;
 
         RequestBody body = RequestBody.create(textPlainMT, DEFAULT_PROVIDER + endpoint);
 
@@ -228,7 +276,15 @@ public class TezosGateway
                     .build();
 
             Response response = client.newCall(request).execute();
-            result = response.body().string();
+
+            try
+            {
+                result = new JSONObject(response.body().string());
+            }
+            catch (Exception e)
+            {
+            }
+
         }
         catch (IOException e)
         {
@@ -243,30 +299,132 @@ public class TezosGateway
 
     public JSONObject getHead() throws Exception
     {
-        String result = query("/blocks/head", null);
-        JSONObject jobj = new JSONObject(result);
-
-        return jobj;
+        return query("/blocks/head", null);
     }
 
 
-    public JSONObject sendOperation(JSONObject operation, String[] keys, Integer fee)
+    public JSONObject sendOperation(JSONObject operation, JSONObject keys, Integer fee)
     {
-        JSONObject response = null;
+        JSONObject result = new JSONObject();
 
-        // TODO : Implement this feature.
-        // sendOperation(operation, keys, fee);
+        JSONObject head = new JSONObject();
+        Integer counter = 0;
+        String pred_block = "";
+        JSONArray returnedContracts = new JSONArray();
+        JSONArray operations = new JSONArray();
 
-        return response;
+        head = query("/blocks/head", null);
+
+        try
+        {
+
+            pred_block = head.get("predecessor").toString();
+
+            JSONObject opOb = new JSONObject();
+            opOb.put("branch", pred_block);
+            opOb.put("source", keys.get("pkh"));
+            operations.put(operation);
+            opOb.put("operations", operations);
+
+            if (fee != null)
+            {
+                result = query("/blocks/prevalidation/proto/context/contracts/" + keys.get("pkh") + "/counter", null);
+
+                counter = Integer.parseInt(result.get("ok").toString()) + 1;
+
+                opOb.put("fee", fee);
+                opOb.put("counter", counter);
+                opOb.put("public_key", keys.get("pk"));
+
+                result = (JSONObject) query("/blocks/prevalidation/proto/helpers/forge/operations", opOb.toString());
+
+                JSONObject resultOperation = (JSONObject) result.get("ok");
+                byte[] opbytes = HEX.decode(resultOperation.get("operation").toString());
+
+                JSONObject signed = new JSONObject();
+                String strSk = keys.get("sk").toString();
+                signed = sign(opbytes, strSk);
+
+                byte[] sopBytes = HEX.decode((String) signed.get("sbytes"));
+                byte[] sopbytesHashed = MyCryptoGenericHash.cryptoGenericHash(sopBytes, 32);
+
+                byte[] myPrefixOp = {(byte) 5, (byte) 116};
+                int totalArraySize = sopbytesHashed.length + myPrefixOp.length;
+                byte[] strOh = new byte[totalArraySize];
+                System.arraycopy(myPrefixOp, 0, strOh, 0, 2);
+
+                for (int i = 0; i < sopbytesHashed.length; i++)
+                {
+                    strOh[i + 2] = sopbytesHashed[i];
+                }
+
+                JSONObject myOperation = new JSONObject();
+                myOperation.put("pred_block", pred_block);
+                myOperation.put("operation_hash", Base58Check.encode(strOh));
+                myOperation.put("forged_operation", HEX.encode(opbytes));
+                myOperation.put("signature", signed.get("edsig"));
+
+                result = (JSONObject) query("/blocks/prevalidation/proto/helpers/apply_operation", myOperation.toString());
+
+                returnedContracts = (JSONArray) ((JSONObject) result.get("ok")).get("contracts");
+
+                JSONObject sopContents = new JSONObject();
+                sopContents.put("signedOperationContents", signed.get("sbytes"));
+
+                result = query("/inject_operation", sopContents.toString());
+
+                result.put("contracts", returnedContracts);
+
+                return result;
+
+            }
+
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+
+        JSONObject jsonObject = new JSONObject();
+        return jsonObject;
+
     }
-
 
     public JSONObject getBalance(String address) throws Exception
     {
-        String result = query("/blocks/prevalidation/proto/context/contracts/" + address + "/balance", null);
-        JSONObject jobj = new JSONObject(result);
+        JSONObject result = query("/blocks/prevalidation/proto/context/contracts/" + address + "/balance", null);
 
-        return jobj;
+        return result;
+    }
+
+
+    public JSONObject transfer(JSONObject keys, String from, String to, BigDecimal amount, Integer fee)
+    {
+
+        BigDecimal roundedAmount = amount.setScale(2, BigDecimal.ROUND_HALF_UP);
+
+        JSONObject operation = new JSONObject();
+        JSONObject myKeys = new JSONObject();
+
+        try
+        {
+            // Prepares operation.
+            operation.put("kind", OPERATION_KIND_TRANSACTION);
+            operation.put("amount", roundedAmount.multiply(new BigDecimal(100)));
+            operation.put("destination", to);
+
+            // Prepares myKeys.
+            myKeys.put("pk", keys.get("pk"));
+            myKeys.put("pkh", from);
+            myKeys.put("sk", keys.get("sk"));
+
+        }
+        catch (Exception e)
+        {
+        }
+
+        return sendOperation(operation, myKeys, fee);
     }
 
 

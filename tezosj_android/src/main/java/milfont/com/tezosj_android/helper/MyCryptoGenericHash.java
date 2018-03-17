@@ -21,4 +21,21 @@ public class MyCryptoGenericHash extends Sodium
 
         return genericHash;
     }
+
+
+    public static int cryptoSignDetached(byte[] input, int[] signature_len, byte[] src_msg, int msg_len, byte[] local_private_key) throws Exception
+    {
+        byte[] dst_signature = new byte[msg_len];
+
+        int rc = Sodium.crypto_sign_detached(dst_signature, signature_len, src_msg, msg_len, local_private_key);
+
+        if (rc != 0)
+        {
+            throw new Exception("cryptoSignDetached libsodium crypto_sign_detached failed, returned " + rc + ", expected 0");
+        }
+
+        return rc;
+    }
+
+
 }

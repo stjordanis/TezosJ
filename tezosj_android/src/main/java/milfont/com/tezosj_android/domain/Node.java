@@ -1,5 +1,7 @@
 package milfont.com.tezosj_android.domain;
 
+import org.json.JSONObject;
+
 import milfont.com.tezosj_android.data.TezosGateway;
 
 
@@ -18,11 +20,9 @@ public class Node
         tzg.resetProvider();
     }
 
-    public String query(String endpoint, String data)
+    public JSONObject query(String endpoint, String data)
     {
         TezosGateway tzg = new TezosGateway();
-        String response = tzg.query(endpoint, data);
-
-        return response;
+        return tzg.query(endpoint, data);
     }
 }

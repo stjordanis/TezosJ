@@ -2,6 +2,8 @@ package milfont.com.tezosj_android.domain;
 
 import org.json.JSONObject;
 
+import java.math.BigDecimal;
+
 import milfont.com.tezosj_android.data.TezosGateway;
 
 
@@ -16,13 +18,10 @@ public class Rpc
         return response;
     }
 
-
-    public JSONObject sendOperation(JSONObject operation, String[] keys, Integer fee)
+    public JSONObject sendOperation(JSONObject operation, JSONObject keys, Integer fee)
     {
         TezosGateway tzg = new TezosGateway();
-        JSONObject response = tzg.sendOperation(operation, keys, fee);
-
-        return response;
+        return tzg.sendOperation(operation, keys, fee);
     }
 
 
@@ -34,5 +33,12 @@ public class Rpc
         return response;
     }
 
+    public JSONObject transfer(JSONObject keys, String from, String to, BigDecimal amount, Integer fee) throws Exception
+    {
+        TezosGateway tzg = new TezosGateway();
+        JSONObject response = tzg.transfer(keys, from, to, amount, fee);
+
+        return response;
+    }
 
 }

@@ -3,9 +3,8 @@ package milfont.com.tezosj;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-
 import org.json.JSONObject;
-
+import java.math.BigDecimal;
 import milfont.com.tezosj_android.domain.Crypto;
 import milfont.com.tezosj_android.domain.Rpc;
 
@@ -31,19 +30,24 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void run()
             {
-                String words = crypto.generateMnemonic();
 
-                JSONObject jsonObject = crypto.generateKeys(words, "test");
+                // The words were hardcoded artificially so that we get an address with a positive balance,
+                // so that we can make a transfer.
+
+                //String words = crypto.generateMnemonic();
+
+                String words = "dentist angry seat fine tennis poverty hat monkey world reopen drop crime run flower shine";
+                JSONObject myKeys = crypto.generateKeys(words, "test");
 
                 try
                 {
-                    Log.i("output", "mnemonic   : " + jsonObject.get("mnemonic"));
-                    Log.i("output", "passphrase : " + jsonObject.get("passphrase"));
-                    Log.i("output", "sk         : " + jsonObject.get("sk"));
-                    Log.i("output", "pk         : " + jsonObject.get("pk"));
-                    Log.i("output", "pkh        : " + jsonObject.get("pkh"));
+                    Log.i("output", "mnemonic   : " + myKeys.get("mnemonic"));
+                    Log.i("output", "passphrase : " + myKeys.get("passphrase"));
+                    Log.i("output", "sk         : " + myKeys.get("sk"));
+                    Log.i("output", "pk         : " + myKeys.get("pk"));
+                    Log.i("output", "pkh        : " + myKeys.get("pkh"));
 
-                    myTezosAddress = jsonObject.get("pkh").toString();
+                    myTezosAddress = myKeys.get("pkh").toString();
 
                 }
                 catch (Exception e)
@@ -63,11 +67,24 @@ public class MainActivity extends AppCompatActivity
                         e.printStackTrace();
                     }
 
+
+                    JSONObject myBalance = new JSONObject();
+
                     // Gets BALANCE for a given address.
                     try
                     {
-                        JSONObject result = rpc.getBalance(myTezosAddress);
-                        Log.i("output", "Your balance is : " + result.get("ok"));
+                        myBalance = rpc.getBalance(myTezosAddress);
+                        Log.i("output", "Your balance is : " + myBalance.get("ok"));
+                    }
+                    catch (Exception e)
+                    {
+                        e.printStackTrace();
+                    }
+
+                    // Transfers funds to another address.
+                    try
+                    {
+                        JSONObject result = rpc.transfer(myKeys, myTezosAddress, "tz1Wd9SHPYZbjgiDjJSGoE6MSza7HmyrX35a", new BigDecimal("73"), 0);
                     }
                     catch (Exception e)
                     {
