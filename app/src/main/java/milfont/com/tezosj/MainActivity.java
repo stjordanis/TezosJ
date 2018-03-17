@@ -30,31 +30,13 @@ public class MainActivity extends AppCompatActivity
             public void run()
             {
 
+                // The words were hardcoded artificially so that we get an address with a positive balance,
+                // so that we can make a transfer.
+
                 //String words = crypto.generateMnemonic();
 
-                //JSONObject myKeys = crypto.generateKeys(words, "test");
-
-// artificially sets the key for testing purposes.
-
-                JSONObject myKeys = new JSONObject();
-                try
-                {
-                    myKeys.put("mnemonic", "dentist angry seat fine tennis poverty hat monkey world reopen drop crime run flower shine");
-                    myKeys.put("passphrase", "test");
-                    myKeys.put("sk", "edskRhzw61ijUs25HwU1FHN87Btheya3oVqG8kjwKoHPNcD8twJUyF45jzugKjhS4Qh53cKs63L5a1jTns6J3btgW5BNJYfy7i");
-                    myKeys.put("pk", "edpku4So5NDDVXfxFV7JwPCXzZRf2ZhKQRwuYk9QmxFjrcAo8YN81Y");
-                    myKeys.put("pkh", "tz1NzGfW3GBSof7Copf731akErQzzecacYsE");
-                }
-                catch (Exception e)
-                {}
-
-                // dentist angry seat fine tennis poverty hat monkey world reopen drop crime run flower shine
-                // passphrase: "test",
-                //  sk: "edskRhzw61ijUs25HwU1FHN87Btheya3oVqG8kjwKoHPNcD8twJUyF45jzugKjhS4Qh53cKs63L5a1jTns6J3btgW5BNJYfy7i",
-                //  pk: "edpku4So5NDDVXfxFV7JwPCXzZRf2ZhKQRwuYk9QmxFjrcAo8YN81Y",
-                // pkh: "tz1NzGfW3GBSof7Copf731akErQzzecacYsE"
-
-//
+                String words = "dentist angry seat fine tennis poverty hat monkey world reopen drop crime run flower shine";
+                JSONObject myKeys = crypto.generateKeys(words, "test");
 
 
                 try
@@ -100,11 +82,10 @@ public class MainActivity extends AppCompatActivity
                         e.printStackTrace();
                     }
 
-                    // Transfers funds to address.
+                    // Transfers funds to another address.
                     try
                     {
-                        JSONObject result = rpc.transfer(myKeys, myTezosAddress, "tz1Wd9SHPYZbjgiDjJSGoE6MSza7HmyrX35a", new BigDecimal("86"),0);
-                        Log.i("output", "Your balance is : " + myBalance.get("ok"));
+                        JSONObject result = rpc.transfer(myKeys, myTezosAddress, "tz1Wd9SHPYZbjgiDjJSGoE6MSza7HmyrX35a", new BigDecimal("73"), 0);
                     }
                     catch (Exception e)
                     {

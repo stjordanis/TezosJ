@@ -1,10 +1,7 @@
 package milfont.com.tezosj_android.data;
 
-import android.util.Log;
-
 import org.bitcoinj.crypto.MnemonicCode;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.libsodium.jni.NaCl;
 
@@ -12,7 +9,6 @@ import static org.libsodium.jni.encoders.Encoder.HEX;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -170,9 +166,9 @@ public class TezosGateway
 
             System.arraycopy(edsigPrefix, 0, byteEdsig, 0, 5);
 
-            for (int i=0;i<sig.length;i++)
+            for (int i = 0; i < sig.length; i++)
             {
-                byteEdsig[i+5] = sig[i];
+                byteEdsig[i + 5] = sig[i];
             }
 
             String edsig = Base58Check.encode(byteEdsig);
@@ -252,6 +248,7 @@ public class TezosGateway
         // resetProvider(DEFAULT_PROVIDER);
     }
 
+
     public JSONObject query(String endpoint, String data)
     {
 
@@ -313,7 +310,6 @@ public class TezosGateway
         JSONObject head = new JSONObject();
         Integer counter = 0;
         String pred_block = "";
-        JSONObject sopbytes = new JSONObject();
         JSONArray returnedContracts = new JSONArray();
         JSONArray operations = new JSONArray();
 
@@ -349,34 +345,33 @@ public class TezosGateway
                 String strSk = keys.get("sk").toString();
                 signed = sign(opbytes, strSk);
 
+                byte[] sopBytes = HEX.decode((String) signed.get("sbytes"));
+                byte[] sopbytesHashed = MyCryptoGenericHash.cryptoGenericHash(sopBytes, 32);
+
                 byte[] myPrefixOp = {(byte) 5, (byte) 116};
+                int totalArraySize = sopbytesHashed.length + myPrefixOp.length;
+                byte[] strOh = new byte[totalArraySize];
+                System.arraycopy(myPrefixOp, 0, strOh, 0, 2);
 
-                byte[] prefixedOpHash = new byte[66];
-                System.arraycopy(myPrefixOp, 0, prefixedOpHash, 0, 2);
-                System.arraycopy(HEX.decode((String) signed.get("sbytes")), 0, prefixedOpHash, 2, 64);
-
-                String oh = Base58.encode(MyCryptoGenericHash.cryptoGenericHash(prefixedOpHash, 32));
+                for (int i = 0; i < sopbytesHashed.length; i++)
+                {
+                    strOh[i + 2] = sopbytesHashed[i];
+                }
 
                 JSONObject myOperation = new JSONObject();
                 myOperation.put("pred_block", pred_block);
-                myOperation.put("operation_hash", "onuU9rP3XgvQM58czhQN4743W7qv8DFWJcfk2GLAFW9EEJBXCGz");
+                myOperation.put("operation_hash", Base58Check.encode(strOh));
                 myOperation.put("forged_operation", HEX.encode(opbytes));
                 myOperation.put("signature", signed.get("edsig"));
-
-                //myOperation.put("pred_block", "BLCV2TcSYrZvcMrV9WW7cDm3xz1oFY6mTaKVLx1eLq4EJxN4m8B");
-                //myOperation.put("operation_hash", "onuU9rP3XgvQM58czhQN4743W7qv8DFWJcfk2GLAFW9EEJBXCGz");
-                //myOperation.put("forged_operation", "4008fb7ae74a982b9a2779f6bffa0a343793b25da36198b34e9ccafaa5828fc500000024bc5c23741688135d92172ce19ad1f850c1e0150136ff920e335f85e669ea81ddc0ea7481912d55ace18534ddd6390bcf106af830000000000000000000007f5b0000001f0000000000000016a800787e98f203fee1b2b96760dc56a2f519549ed54f00");
-                //myOperation.put("signature", "edsigteZJMMEqZD41eQd1A6UskkidPbDzeTvuX4vgBPieBrBNP6wk5xbU7qAFiq5po4uUUUNZctX41NaMj1Gem6xNVZbYEoJcHV");
 
                 result = (JSONObject) query("/blocks/prevalidation/proto/helpers/apply_operation", myOperation.toString());
 
                 returnedContracts = (JSONArray) ((JSONObject) result.get("ok")).get("contracts");
 
-                String sopContents = "\"signedOperationContents\" : " +  signed + ",";
-                result = query("/inject_operation", sopContents);
+                JSONObject sopContents = new JSONObject();
+                sopContents.put("signedOperationContents", signed.get("sbytes"));
 
-                // TODO: two remaining problems. 1) Operation Hash (oh) is not being calculated properly.
-                //                               2) /inject_operation (API) complaints about wrong type of arguments, although provided.
+                result = query("/inject_operation", sopContents.toString());
 
                 result.put("contracts", returnedContracts);
 
@@ -396,75 +391,13 @@ public class TezosGateway
 
     }
 
-
-/*
-  sendOperation : function(operation, keys, fee)
-  {
-    var head, counter, pred_block, sopbytes, returnedContracts;
-    var promises = []
-    promises.push(node.query('/blocks/head'));
-    if (typeof fee != 'unfedined')
-    {
-      promises.push(node.query('/blocks/prevalidation/proto/context/contracts/'+keys.pkh+'/counter'));
-    }
-
-    return Promise.all(promises).then(function(f)
-    {
-      head = f[0];
-      pred_block = head.predecessor;
-      var opOb =
-       {
-          "branch": pred_block,
-          "source": keys.pkh,
-          "operations": [operation]
-      }
-      if (typeof fee != 'unfedined')
-      {
-        counter = f[1]+1;
-        opOb['fee'] = fee;
-        opOb['counter'] = counter;
-        opOb['public_key'] = keys.pk;
-      }
-      return node.query('/blocks/prevalidation/proto/helpers/forge/operations', opOb);
-    })
-    .then(function(f)
-    {
-      var opbytes = f.operation;
-      var signed = crypto.sign(opbytes, keys.sk);
-      sopbytes = signed.sbytes;
-      var oh = utility.b58cencode(library.sodium.crypto_generichash(32, utility.hex2buf(sopbytes)), prefix.o);
-      return node.query('/blocks/prevalidation/proto/helpers/apply_operation',
-       {
-          "pred_block": pred_block,
-          "operation_hash": oh,
-          "forged_operation": opbytes,
-          "signature": signed.edsig
-      });
-    })
-    .then(function(f)
-    {
-      returnedContracts = f.contracts;
-      return node.query('/inject_operation',
-      {
-         "signedOperationContents" : sopbytes,
-      });
-    })
-    .then(function(f)
-    {
-      f['contracts'] = returnedContracts;
-      return f
-    });
-}
-
- */
-
-
     public JSONObject getBalance(String address) throws Exception
     {
         JSONObject result = query("/blocks/prevalidation/proto/context/contracts/" + address + "/balance", null);
 
         return result;
     }
+
 
     public JSONObject transfer(JSONObject keys, String from, String to, BigDecimal amount, Integer fee)
     {
