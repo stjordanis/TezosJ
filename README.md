@@ -11,7 +11,7 @@ Read the **[project documentation][doc-home]** for comprehensive information abo
 ## Disclaimer
 
 This software is at Alpha stage. It is currently experimental and is under development.
-Many features are not fully implemented yet. This version uses Tezos Alphanet.
+Many features are not fully implemented yet. This version uses Tezos Betanet (caution!).
 
 ## Resources
 <!---
