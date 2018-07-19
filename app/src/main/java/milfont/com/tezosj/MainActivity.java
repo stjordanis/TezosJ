@@ -3,10 +3,15 @@ package milfont.com.tezosj;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+
 import org.json.JSONObject;
+
 import java.math.BigDecimal;
+
 import milfont.com.tezosj_android.domain.Crypto;
 import milfont.com.tezosj_android.domain.Rpc;
+
+import static milfont.com.tezosj_android.helper.Constants.TEZOS_SYMBOL;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -31,12 +36,7 @@ public class MainActivity extends AppCompatActivity
             public void run()
             {
 
-                // The words were hardcoded artificially so that we get an address with a positive balance,
-                // so that we can make a transfer.
-
-                //String words = crypto.generateMnemonic();
-
-                String words = "dentist angry seat fine tennis poverty hat monkey world reopen drop crime run flower shine";
+                String words = crypto.generateMnemonic();
                 JSONObject myKeys = crypto.generateKeys(words, "test");
 
                 try
@@ -57,51 +57,18 @@ public class MainActivity extends AppCompatActivity
                 if (myTezosAddress.length() > 0)
                 {
                     // Checks if ADDRESS is valid.
-                    try
-                    {
-                        Boolean result = crypto.checkAddress(myTezosAddress);
-                        Log.i("output", "The address " + myTezosAddress + " is " + (result ? "valid" : "invalid"));
-                    }
-                    catch (Exception e)
-                    {
-                        e.printStackTrace();
-                    }
-
-
-                    JSONObject myBalance = new JSONObject();
+                    Boolean result = crypto.checkAddress(myTezosAddress);
+                    Log.i("output", "\n\nThe address " + myTezosAddress + " is " + (result ? "valid" : "invalid"));
 
                     // Gets BALANCE for a given address.
-                    try
-                    {
-                        myBalance = rpc.getBalance(myTezosAddress);
-                        Log.i("output", "Your balance is : " + myBalance.get("ok"));
-                    }
-                    catch (Exception e)
-                    {
-                        e.printStackTrace();
-                    }
+                    String myBalance = rpc.getBalance(myTezosAddress);
+                    Log.i("output", "Your balance is : " + new BigDecimal(myBalance).divide(BigDecimal.valueOf(1000000)) + TEZOS_SYMBOL +"\n\n");
 
-                    // Transfers funds to another address.
-                    try
-                    {
-                        JSONObject result = rpc.transfer(myKeys, myTezosAddress, "tz1Wd9SHPYZbjgiDjJSGoE6MSza7HmyrX35a", new BigDecimal("73"), 0);
-                    }
-                    catch (Exception e)
-                    {
-                        e.printStackTrace();
-                    }
                 }
 
                 // Gets HEAD object from the connected node for a given address.
-                //try
-                //{
-                //    JSONObject result = rpc.getHead();
-                //    Log.i("output", "Head : " + result.toString());
-                //}
-                //catch (Exception e)
-                //{
-                //    e.printStackTrace();
-                //}
+                //String result = rpc.getHead();
+                //Log.i("output", "Head : " + result.toString());
             }
         });
 

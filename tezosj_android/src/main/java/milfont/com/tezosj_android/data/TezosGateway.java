@@ -1,3 +1,8 @@
+////////////////////////////////////////////////////////////////////
+// WARNING - This software uses the real Tezos Betanet blockchain.
+//           Use it with caution.
+////////////////////////////////////////////////////////////////////
+
 package milfont.com.tezosj_android.data;
 
 import org.bitcoinj.crypto.MnemonicCode;
@@ -27,12 +32,12 @@ import okhttp3.Response;
 public class TezosGateway
 {
 
-    final String DEFAULT_PROVIDER = "https://tezrpc.me/api";
+    final String DEFAULT_PROVIDER = "https://rpc.tezrpc.me";
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     public static final MediaType textPlainMT = MediaType.parse("text/plain; charset=utf-8");
     public static final Integer HTTP_TIMEOUT = 20;
-
     public static String OPERATION_KIND_TRANSACTION = "transaction";
+
 
     // Crypto methods.
 
@@ -114,33 +119,6 @@ public class TezosGateway
         return response;
     }
 
-    public JSONObject generateKeysNoSeed()
-    {
-        JSONObject response = null;
-
-        // TODO : Implement this feature.
-
-        return response;
-    }
-
-    public JSONObject generateKeysSalted(String mnemonic, String passphrase)
-    {
-        JSONObject response = null;
-
-        // TODO : Implement this feature.
-
-        return response;
-    }
-
-    public JSONObject generateKeysFromSeedMulti(String mnemonic, String passphrase, Integer n)
-    {
-        JSONObject response = null;
-
-        // TODO : Implement this feature.
-
-        return response;
-    }
-
     public JSONObject sign(byte[] bytes, String sk)
     {
         JSONObject response = new JSONObject();
@@ -189,14 +167,6 @@ public class TezosGateway
         return response;
     }
 
-
-    public Boolean verify(Byte[] bytes, String signature, String pk)
-    {
-        // TODO : Implement this feature.
-
-        return false;
-    }
-
     public String generateMnemonic()
     {
         String result = "";
@@ -234,25 +204,10 @@ public class TezosGateway
     }
 
 
-    // Node methods.
-
-    public void setProvider(String provider)
-    {
-        // TODO : Implement this feature.
-        // setProvider(provider);
-    }
-
-    public void resetProvider()
-    {
-        // TODO : Implement this feature.
-        // resetProvider(DEFAULT_PROVIDER);
-    }
-
-
     public JSONObject query(String endpoint, String data)
     {
 
-        JSONObject result = null;
+        JSONObject result = new JSONObject();
 
         RequestBody body = RequestBody.create(textPlainMT, DEFAULT_PROVIDER + endpoint);
 
@@ -263,7 +218,6 @@ public class TezosGateway
 
         Request request = new Request.Builder()
                 .url(DEFAULT_PROVIDER + endpoint)
-                .post(body)
                 .build();
 
 
@@ -279,7 +233,7 @@ public class TezosGateway
 
             try
             {
-                result = new JSONObject(response.body().string());
+                result.put("ok", response.body().string());
             }
             catch (Exception e)
             {
@@ -299,132 +253,36 @@ public class TezosGateway
 
     public JSONObject getHead() throws Exception
     {
-        return query("/blocks/head", null);
-    }
-
-
-    public JSONObject sendOperation(JSONObject operation, JSONObject keys, Integer fee)
-    {
-        JSONObject result = new JSONObject();
-
-        JSONObject head = new JSONObject();
-        Integer counter = 0;
-        String pred_block = "";
-        JSONArray returnedContracts = new JSONArray();
-        JSONArray operations = new JSONArray();
-
-        head = query("/blocks/head", null);
-
-        try
-        {
-
-            pred_block = head.get("predecessor").toString();
-
-            JSONObject opOb = new JSONObject();
-            opOb.put("branch", pred_block);
-            opOb.put("source", keys.get("pkh"));
-            operations.put(operation);
-            opOb.put("operations", operations);
-
-            if (fee != null)
-            {
-                result = query("/blocks/prevalidation/proto/context/contracts/" + keys.get("pkh") + "/counter", null);
-
-                counter = Integer.parseInt(result.get("ok").toString()) + 1;
-
-                opOb.put("fee", fee);
-                opOb.put("counter", counter);
-                opOb.put("public_key", keys.get("pk"));
-
-                result = (JSONObject) query("/blocks/prevalidation/proto/helpers/forge/operations", opOb.toString());
-
-                JSONObject resultOperation = (JSONObject) result.get("ok");
-                byte[] opbytes = HEX.decode(resultOperation.get("operation").toString());
-
-                JSONObject signed = new JSONObject();
-                String strSk = keys.get("sk").toString();
-                signed = sign(opbytes, strSk);
-
-                byte[] sopBytes = HEX.decode((String) signed.get("sbytes"));
-                byte[] sopbytesHashed = MyCryptoGenericHash.cryptoGenericHash(sopBytes, 32);
-
-                byte[] myPrefixOp = {(byte) 5, (byte) 116};
-                int totalArraySize = sopbytesHashed.length + myPrefixOp.length;
-                byte[] strOh = new byte[totalArraySize];
-                System.arraycopy(myPrefixOp, 0, strOh, 0, 2);
-
-                for (int i = 0; i < sopbytesHashed.length; i++)
-                {
-                    strOh[i + 2] = sopbytesHashed[i];
-                }
-
-                JSONObject myOperation = new JSONObject();
-                myOperation.put("pred_block", pred_block);
-                myOperation.put("operation_hash", Base58Check.encode(strOh));
-                myOperation.put("forged_operation", HEX.encode(opbytes));
-                myOperation.put("signature", signed.get("edsig"));
-
-                result = (JSONObject) query("/blocks/prevalidation/proto/helpers/apply_operation", myOperation.toString());
-
-                returnedContracts = (JSONArray) ((JSONObject) result.get("ok")).get("contracts");
-
-                JSONObject sopContents = new JSONObject();
-                sopContents.put("signedOperationContents", signed.get("sbytes"));
-
-                result = query("/inject_operation", sopContents.toString());
-
-                result.put("contracts", returnedContracts);
-
-                return result;
-
-            }
-
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-
-
-        JSONObject jsonObject = new JSONObject();
-        return jsonObject;
-
+        return query("/chains/main/blocks/head", null);
     }
 
     public JSONObject getBalance(String address) throws Exception
     {
-        JSONObject result = query("/blocks/prevalidation/proto/context/contracts/" + address + "/balance", null);
+        JSONObject result = query("/chains/main/blocks/head/context/contracts/" + address + "/balance", null);
 
         return result;
     }
 
 
-    public JSONObject transfer(JSONObject keys, String from, String to, BigDecimal amount, Integer fee)
+
+
+    //////////////////////////////////////////////////////////
+    //
+    // TODO features...
+    //
+    //////////////////////////////////////////////////////////
+
+    public JSONObject sendOperation(JSONObject operation, JSONObject keys, Integer fee)
     {
 
-        BigDecimal roundedAmount = amount.setScale(2, BigDecimal.ROUND_HALF_UP);
+        // TODO : Implement this feature.
+        JSONObject jsonObject = new JSONObject();
+        return jsonObject;
+    }
 
-        JSONObject operation = new JSONObject();
-        JSONObject myKeys = new JSONObject();
-
-        try
-        {
-            // Prepares operation.
-            operation.put("kind", OPERATION_KIND_TRANSACTION);
-            operation.put("amount", roundedAmount.multiply(new BigDecimal(100)));
-            operation.put("destination", to);
-
-            // Prepares myKeys.
-            myKeys.put("pk", keys.get("pk"));
-            myKeys.put("pkh", from);
-            myKeys.put("sk", keys.get("sk"));
-
-        }
-        catch (Exception e)
-        {
-        }
-
-        return sendOperation(operation, myKeys, fee);
+    public void transfer(JSONObject keys, String from, String to, BigDecimal amount, Integer fee)
+    {
+        // TODO : Implement this feature.
     }
 
 
@@ -433,7 +291,6 @@ public class TezosGateway
     public void originate(String address)
     {
         // TODO : Implement this feature.
-        // originate(address);
     }
 
     public JSONObject storage(String contractAddress)
@@ -441,7 +298,6 @@ public class TezosGateway
         JSONObject response = null;
 
         // TODO : Implement this feature.
-        // storage(contractAddress);
 
         return response;
     }
@@ -451,7 +307,6 @@ public class TezosGateway
         String response = "";
 
         // TODO : Implement this feature.
-        // load(contractAddress);
 
         return response;
     }
@@ -461,7 +316,6 @@ public class TezosGateway
         JSONArray response = null;
 
         // TODO : Implement this feature.
-        // watch(contractAddress, interval);
 
         return response;
     }
@@ -471,9 +325,57 @@ public class TezosGateway
         JSONObject response = null;
 
         // TODO : Implement this feature.
-        // send(contractAddress, keys, amount, parameter, fee);
 
         return response;
+    }
+
+    public JSONObject generateKeysNoSeed()
+    {
+        JSONObject response = null;
+
+        // TODO : Implement this feature.
+
+        return response;
+    }
+
+    public JSONObject generateKeysSalted(String mnemonic, String passphrase)
+    {
+        JSONObject response = null;
+
+        // TODO : Implement this feature.
+
+        return response;
+    }
+
+    public JSONObject generateKeysFromSeedMulti(String mnemonic, String passphrase, Integer n)
+    {
+        JSONObject response = null;
+
+        // TODO : Implement this feature.
+
+        return response;
+    }
+
+
+    public Boolean verify(Byte[] bytes, String signature, String pk)
+    {
+        // TODO : Implement this feature.
+
+        return false;
+    }
+
+    // Node methods.
+
+    public void setProvider(String provider)
+    {
+        // TODO : Implement this feature.
+        // setProvider(provider);
+    }
+
+    public void resetProvider()
+    {
+        // TODO : Implement this feature.
+        // resetProvider(DEFAULT_PROVIDER);
     }
 
 

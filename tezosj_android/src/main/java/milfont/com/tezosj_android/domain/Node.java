@@ -1,28 +1,52 @@
 package milfont.com.tezosj_android.domain;
 
-import org.json.JSONObject;
-
 import milfont.com.tezosj_android.data.TezosGateway;
-
 
 public class Node
 {
 
     public void setProvider(String provider)
     {
-        TezosGateway tzg = new TezosGateway();
-        tzg.setProvider(provider);
+        try
+        {
+            TezosGateway tzg = new TezosGateway();
+            tzg.setProvider(provider);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
     }
 
     public void resetProvider()
     {
-        TezosGateway tzg = new TezosGateway();
-        tzg.resetProvider();
+        try
+        {
+            TezosGateway tzg = new TezosGateway();
+            tzg.resetProvider();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 
-    public JSONObject query(String endpoint, String data)
+    public String query(String endpoint, String data)
     {
-        TezosGateway tzg = new TezosGateway();
-        return tzg.query(endpoint, data);
+        String response = "";
+
+        try
+        {
+            TezosGateway tzg = new TezosGateway();
+            response = (String) tzg.query(endpoint, data).get("ok");
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        return response;
     }
+
 }
