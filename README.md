@@ -37,7 +37,7 @@ TezosJ is to play the role of a layer that will translate default Java method ca
 ## Credits
 
 - TezosJ is based on Stephen Andrews' EZTZ Javascript library  [https://github.com/stephenandrews/eztz](https://github.com/stephenandrews/eztz).  
-- TezosJ is also based on ConseilJS from Cryptonomic [https://github.com/Cryptonomic/ConseilJS] (https://github.com/Cryptonomic/ConseilJS)
+- TezosJ is also based on ConseilJS from Cryptonomic [https://github.com/Cryptonomic/ConseilJS](https://github.com/Cryptonomic/ConseilJS)
 - TezosJ uses Libsodium-JNI from Joshjdevl  [https://github.com/joshjdevl/libsodium-jni](https://github.com/joshjdevl/libsodium-jni).  
 - TezosJ uses BitcoinJ Java Library  [https://github.com/bitcoinj/bitcoinj](https://github.com/bitcoinj/bitcoinj).   
 - TezosJ uses NicoToast fat-aar plugin [https://github.com/NicoToast/fat-aar] (https://github.com/NicoToast/fat-aar)
