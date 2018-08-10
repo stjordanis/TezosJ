@@ -1,8 +1,8 @@
-# TezosJ library
+# TezosJ SDK library
 
-The **TezosJ library** enables Java and Android developers to create apps that communicates with Tezos blockchain.
+The **TezosJ SDK library** enables Android Java developers to create apps that communicates with Tezos blockchain.
 
-The library is written in Java and is based on Android framework. This repository contains the library as well as a demo application demonstrating how to use it.
+The library is written in Java and is based on Android framework. This repository contains the library as well as a demo wallet application demonstrating how to use it.
 
 ## Getting started
 
@@ -10,8 +10,8 @@ Read the **[project documentation][doc-home]** for comprehensive information abo
 
 ## Disclaimer
 
-This software is at Alpha stage. It is currently experimental and is under development.
-Many features are not fully implemented yet. This version uses Tezos Alphanet.
+This software is at Beta stage. It is currently experimental and still under development.
+Many features are not fully tested/implemented yet. This version uses Tezos Betanet (!)
 
 ## Resources
 <!---
@@ -25,13 +25,11 @@ Many features are not fully implemented yet. This version uses Tezos Alphanet.
 ## Features
 
 - Create wallets addresses
-- Getting accounts balance
-- Sending funds, ...
+- Get accounts balance
+- Send funds
 
-<!---
-- Presents a **clean, native payment screen** optimized for Android devices
 
-The main purpose of TezosJ Integration Library is to foster development of applications in Java / Android that interacts
+The main purpose of TezosJ SDK library is to foster development of applications in Java / Android that interacts
 with Tezos ecosystem. This might open Tezos to a whole world of software producers, ready to collaborate with the platform.
 TezosJ is to play the role of a layer that will translate default Java method calls to Tezos's network real operations
 (create_account, transfer_token, etc.).
@@ -40,21 +38,16 @@ TezosJ is to play the role of a layer that will translate default Java method ca
 ## Credits
 
 - TezosJ is based on Stephen Andrews' EZTZ Javascript library  [https://github.com/stephenandrews/eztz](https://github.com/stephenandrews/eztz).  
+- TezosJ is also based on ConseilJS from Cryptonomic [https://github.com/Cryptonomic/ConseilJS] (https://github.com/Cryptonomic/ConseilJS)
 - TezosJ uses Libsodium-JNI from Joshjdevl  [https://github.com/joshjdevl/libsodium-jni](https://github.com/joshjdevl/libsodium-jni).  
 - TezosJ uses BitcoinJ Java Library  [https://github.com/bitcoinj/bitcoinj](https://github.com/bitcoinj/bitcoinj).   
+- TezosJ uses NicoToast fat-aar plugin [https://github.com/NicoToast/fat-aar] (https://github.com/NicoToast/fat-aar)
 - Special thanks to Tezzigator ([https://twitter.com/@tezzigator](https://twitter.com/@tezzigator)) for providing the code for Tezos Key Generation in Java. 
 
-## Contribute
-
-Please consider donating to foster future enhancements: 
-
-- Bitcoin:  35zL4KCZeE8vG6gPWJ9MypwV6aMSMvneAS 
-- Ethereum: 0xa2d909FEE7e6A0A5c6c052eABf4D5d6B0E1c8817 
-- Waves: 3P8BRcvebZdcX8DJt3oXzHcpV5nmckNNJHp 
 
 ## License
 
-The **TezosJ library** is available under the **MIT License**. Check out the [license file][project-license] for more information.
+The **TezosJ SDK library** is available under the **MIT License**. Check out the [license file][project-license] for more information.
 
 [doc-home]: https://github.com/LMilfont/TezosJ/wiki
 
@@ -64,4 +57,4 @@ The **TezosJ library** is available under the **MIT License**. Check out the [li
 
 [project-license]: LICENSE.md
 [project-changelog]: CHANGELOG.md
-[project-contributing]: CONTRIBUTING.md
+
