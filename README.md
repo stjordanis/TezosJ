@@ -20,12 +20,11 @@ Many features are not fully tested/implemented yet. This version uses Tezos Beta
 -->
 - [Issues][project-issues] — To report issues, submit pull requests and get involved (see [MIT License][project-license])
 - [Change log][project-changelog] — To check the changes of the latest versions
-- [Contributing guidelines][project-contributing] — To contribute to our source code
 
 ## Features
 
-- Create wallets addresses
-- Get accounts balance
+- Create valid Tezos wallet address
+- Get account balance
 - Send funds
 
 
