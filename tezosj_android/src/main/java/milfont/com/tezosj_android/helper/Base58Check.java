@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.Locale;
 
 public class Base58Check
 {
@@ -85,7 +86,7 @@ public class Base58Check
 
             if (digit == -1)
             {
-                throw new IllegalArgumentException(String.format("Invalid Base58 character `%c` at position %d", current, i));
+                throw new IllegalArgumentException(String.format(Locale.ENGLISH,"Invalid Base58 character `%c` at position %d", current, i));
             }
 
             intData = (intData.multiply(BASE_SIZE)).add(BigInteger.valueOf(digit));

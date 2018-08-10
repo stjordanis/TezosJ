@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'me.lucas.fat-aar'
 
 ext {
     bintrayRepo = 'tezos'
@@ -8,12 +9,12 @@ ext {
     libraryName = 'TezosJ'
     artifact = 'tezosj_android'
 
-    libraryDescription = 'Tezos Java Integration Library'
+    libraryDescription = 'TezosGateway Java Integration Library'
 
     siteUrl = 'https://github.com/LMilfont/TezosJ'
     gitUrl = 'https://github.com/LMilfont/TezosJ.git'
 
-    libraryVersion = '0.0.4'
+    libraryVersion = '0.9.0'
 
     developerId = 'LMilfont'
     developerName = 'Luiz Milfont'
@@ -27,7 +28,7 @@ ext {
 android {
     compileSdkVersion 27
     defaultConfig {
-        minSdkVersion 19
+        minSdkVersion 23
         targetSdkVersion 27
         versionCode 1
         versionName "1.0"
@@ -54,12 +55,16 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
-    compile 'com.google.guava:guava:r05'
-    compile 'org.slf4j:slf4j-simple:1.6.1'
+    implementation 'com.google.guava:guava:r05'
+    implementation 'org.slf4j:slf4j-simple:1.6.1'
+    embed("com.github.joshjdevl.libsodiumjni:libsodium-jni-aar:2.0.1") { transitive true }
+    embed("org.apache.commons:commons-lang3:3.7") { transitive true }
+    embed("org.bitcoinj:bitcoinj-core:0.14.7") { transitive true }
+    embed("com.squareup.okhttp3:okhttp:3.11.0") { transitive true }
+}
 
-    api 'org.bitcoinj:bitcoinj-core:0.14.6'
-    api 'com.github.joshjdevl.libsodiumjni:libsodium-jni-aar:1.0.8'
-    api 'com.squareup.okhttp3:okhttp:3.10.0'
+fatLibraryExt {
+    enable true
 }
 
 apply from: '../deployment/installv1.gradle'

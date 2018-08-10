@@ -1,18 +1,19 @@
 package milfont.com.tezosj;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import org.json.JSONObject;
-import java.math.BigDecimal;
-import milfont.com.tezosj_android.domain.Crypto;
-import milfont.com.tezosj_android.domain.Rpc;
+import android.view.View;
+import android.widget.Button;
+
+import milfont.com.tezosj_android.helper.SharedPreferencesHelper;
+
+
+import static milfont.com.tezosj_android.helper.Constants.TZJ_KEY_ALIAS;
 
 public class MainActivity extends AppCompatActivity
 {
-    final Rpc rpc = new Rpc();
-    final Crypto crypto = new Crypto();
-    String myTezosAddress = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -20,91 +21,54 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        testMethods();
-    }
+        Context ctx = this;
 
-    private void testMethods()
-    {
-        Thread thread = new Thread(new Runnable()
+        // Checks if there is a previously saved wallet.
+        String myWalletString = "";
+        SharedPreferencesHelper sp = new SharedPreferencesHelper();
+        myWalletString = sp.getSharedPreferenceString(ctx, TZJ_KEY_ALIAS, "");
+
+        if (myWalletString.length() > 0)
         {
-            @Override
-            public void run()
+            // Opens wallet activity.
+            Intent intent = new Intent(MainActivity.this, WalletActivity.class);
+            startActivity(intent);
+
+            finish();
+
+        }
+        else
+        {
+            // Gets screen element references.
+            Button btnNewWallet = (Button) findViewById(R.id.btn_new_wallet);
+            Button btnImportWallet = (Button) findViewById(R.id.btn_import_wallet);
+
+            // Adds listeners.
+            btnNewWallet.setOnClickListener(new View.OnClickListener()
             {
-
-                // The words were hardcoded artificially so that we get an address with a positive balance,
-                // so that we can make a transfer.
-
-                //String words = crypto.generateMnemonic();
-
-                String words = "dentist angry seat fine tennis poverty hat monkey world reopen drop crime run flower shine";
-                JSONObject myKeys = crypto.generateKeys(words, "test");
-
-                try
+                @Override
+                public void onClick(View v)
                 {
-                    Log.i("output", "mnemonic   : " + myKeys.get("mnemonic"));
-                    Log.i("output", "passphrase : " + myKeys.get("passphrase"));
-                    Log.i("output", "sk         : " + myKeys.get("sk"));
-                    Log.i("output", "pk         : " + myKeys.get("pk"));
-                    Log.i("output", "pkh        : " + myKeys.get("pkh"));
-
-                    myTezosAddress = myKeys.get("pkh").toString();
-
+                    // Opens new wallet activity.
+                    Intent intent = new Intent(MainActivity.this, NewWalletActivity.class);
+                    startActivity(intent);
+                    finish();
                 }
-                catch (Exception e)
+            });
+
+            btnImportWallet.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
                 {
+                    // Opens import wallet activity.
+                    Intent intent = new Intent(MainActivity.this, ImportWalletActivity.class);
+                    startActivity(intent);
+                    finish();
                 }
+            });
+        }
 
-                if (myTezosAddress.length() > 0)
-                {
-                    // Checks if ADDRESS is valid.
-                    try
-                    {
-                        Boolean result = crypto.checkAddress(myTezosAddress);
-                        Log.i("output", "The address " + myTezosAddress + " is " + (result ? "valid" : "invalid"));
-                    }
-                    catch (Exception e)
-                    {
-                        e.printStackTrace();
-                    }
-
-
-                    JSONObject myBalance = new JSONObject();
-
-                    // Gets BALANCE for a given address.
-                    try
-                    {
-                        myBalance = rpc.getBalance(myTezosAddress);
-                        Log.i("output", "Your balance is : " + myBalance.get("ok"));
-                    }
-                    catch (Exception e)
-                    {
-                        e.printStackTrace();
-                    }
-
-                    // Transfers funds to another address.
-                    try
-                    {
-                        JSONObject result = rpc.transfer(myKeys, myTezosAddress, "tz1Wd9SHPYZbjgiDjJSGoE6MSza7HmyrX35a", new BigDecimal("73"), 0);
-                    }
-                    catch (Exception e)
-                    {
-                        e.printStackTrace();
-                    }
-                }
-
-                // Gets HEAD object from the connected node for a given address.
-                //try
-                //{
-                //    JSONObject result = rpc.getHead();
-                //    Log.i("output", "Head : " + result.toString());
-                //}
-                //catch (Exception e)
-                //{
-                //    e.printStackTrace();
-                //}
-            }
-        });
-
-        thread.start();
     }
+
 }

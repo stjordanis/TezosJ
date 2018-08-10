@@ -1,44 +1,95 @@
 package milfont.com.tezosj_android.domain;
 
 import org.json.JSONObject;
-
 import java.math.BigDecimal;
 
 import milfont.com.tezosj_android.data.TezosGateway;
+import milfont.com.tezosj_android.model.EncKeys;
 
 
 public class Rpc
 {
 
-    public JSONObject getHead() throws Exception
+    private TezosGateway tezosGateway = null;
+
+
+    public Rpc()
     {
-        TezosGateway tzg = new TezosGateway();
-        JSONObject response = tzg.getHead();
+        this.tezosGateway = new TezosGateway();
+    }
+
+
+    public String getHead()
+    {
+        JSONObject result = new JSONObject();
+        String response = "";
+
+        try
+        {
+            response = (String) tezosGateway.getHead().get("result");
+            result.put("result", response);
+
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            try
+            {
+                result.put("result", "An error occured when trying to do getHead operation. See stacktrace for more info.");
+            }
+            catch (Exception f)
+            {
+                f.printStackTrace();
+            }
+        }
 
         return response;
     }
 
-    public JSONObject sendOperation(JSONObject operation, JSONObject keys, Integer fee)
+    public JSONObject getBalance(String address)
     {
-        TezosGateway tzg = new TezosGateway();
-        return tzg.sendOperation(operation, keys, fee);
+        JSONObject result = new JSONObject();
+        String response = "";
+
+        try
+        {
+            response = (String) tezosGateway.getBalance(address).get("result");
+            result.put("result", response);
+
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            try
+            {
+                result.put("result", e.toString());
+            }
+            catch (Exception f)
+            {
+                f.printStackTrace();
+            }
+        }
+
+        return result;
+
     }
 
-
-    public JSONObject getBalance(String address) throws Exception
+    public JSONObject transfer(String from, String to, BigDecimal amount, String fee, String gasLimit, String storageLimit, EncKeys encKeys)
     {
-        TezosGateway tzg = new TezosGateway();
-        JSONObject response = tzg.getBalance(address);
+        JSONObject result = new JSONObject();
 
-        return response;
-    }
+        try
+        {
+            result = (JSONObject) tezosGateway.sendTransaction(from, to, amount, fee, gasLimit, storageLimit, encKeys);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            throw new java.lang.RuntimeException("An error occured while trying to do perform an operation. See stacktrace for more info.");
+        }
 
-    public JSONObject transfer(JSONObject keys, String from, String to, BigDecimal amount, Integer fee) throws Exception
-    {
-        TezosGateway tzg = new TezosGateway();
-        JSONObject response = tzg.transfer(keys, from, to, amount, fee);
+        return result;
 
-        return response;
     }
 
 }
